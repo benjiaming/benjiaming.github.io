@@ -57,6 +57,11 @@
         const resultElement = document.getElementById("result")
         const judgementElement = document.getElementById("judgement")
         const phraseElement = document.getElementById("phrase")
+        const rightElement = document.getElementById("right")
+        const wrongElement = document.getElementById("wrong")
+
+        let rightAnswers = 0
+        let wrongAnswers = 0
 
         continueButton.style.display = "none"
         againButton.style.display = "none"
@@ -94,10 +99,14 @@
               resultElement.innerText = phrase
               resultElement.style.color = "green"
               judgementElement.innerText = "GOOD JOB!"
+              rightAnswers += 1
+              rightElement.innerHTML = rightAnswers
             } else {
               resultElement.innerText = phrases[0]
               resultElement.style.color = "red"
               judgementElement.innerText = "Oops. Try again!"
+              wrongAnswers += 1
+              wrongElement.innerHTML = wrongAnswers
             }
             annyang.abort()
             continueButton.style.display = "block"
@@ -118,6 +127,8 @@
         <div class="button-container">
           <button id="again">Try again</button>
           <button id="continue">Next word</button>
+          Right answers: <span id="right"></span>
+          Wrong answers: <span id="wrong"></span>
         </div>
       </div>
     </div>
