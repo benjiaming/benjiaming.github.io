@@ -159,11 +159,8 @@
             if (phrases.includes(phrase)) {
               markCorrect(phrase)
             } else {
-              if (phrases.includes(phrase.replace("？", ""))) {
-                markCorrect(phrase)
-              } else if (phrases.includes(phrase.replace("！", ""))) {
-                markCorrect(phrase)
-              } else if (phrases.includes(phrase.replace("。", ""))) {
+              const normalizedPhrase = phrase.replace(/？?！! 。.\(\), /g, "")
+              if (phrases.includes(normalizedPhrase)) {
                 markCorrect(phrase)
               } else {
                 markIncorrect(phrases[0])
