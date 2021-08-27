@@ -57,6 +57,7 @@
           mandarin_deck_2_short_medium: {},
           hsk4_lesson_249: {},
           japanese_deck_1_short: {},
+          hsk5_grammar: {},
         }
 
         const continueButton = document.getElementById("continue")
@@ -105,8 +106,8 @@
             setLanguage(selectedDeck)
             currentDeck = phrases[selectedDeck]
 
-          keys = Object.keys(currentDeck)
-          nextPhrase()
+            keys = Object.keys(currentDeck)
+            nextPhrase()
           })
         }
         againButton.onclick = function () {
@@ -142,6 +143,8 @@
         function setLanguage(selectedDeck) {
           if (selectedDeck.includes("japanese")) {
             annyang.setLanguage("ja")
+          } else if (selectedDeck.includes("vietnamese")) {
+            annyang.setLanguage("zh-CN")
           } else {
             annyang.setLanguage("zh-CN")
           }
@@ -201,6 +204,7 @@
             <option value="hsk4_lesson_249">
               HSK 4 Lesson 249: Feed on Fancies (望梅止渴)
             </option>
+            <option value="hsk5_grammar">HSK 5 Grammar Points</option>
             <option value="japanese_deck_1_short">
               LTL Japanese Deck Level 1 - Short
             </option>
@@ -226,12 +230,21 @@
       </div>
     </div>
     <div>
-      <small
-        >Source:
-        <a href="https://flexiclasses.com/anki-decks-chinese/"
-          >https://flexiclasses.com/anki-decks-chinese/</a
-        ></small
-      >
+      <small>
+        Source:
+        <ul>
+          <li>
+            <a href="https://flexiclasses.com/anki-decks-chinese/"
+              >https://flexiclasses.com/anki-decks-chinese/</a
+            >
+          </li>
+          <li>
+            <a href="https://www.zerotohero.ca/en/zh/grammar"
+              >https://www.zerotohero.ca/en/zh/grammar</a
+            >
+          </li>
+        </ul>
+      </small>
     </div>
   </body>
 </html>
