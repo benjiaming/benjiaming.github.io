@@ -156,16 +156,16 @@
         }
         function refreshCallback(phrase) {
           annyang.addCallback("result", function (phrases) {
-            if (phrases.includes(phrase)) {
+            const normalizedPhrase = phrase.replace(
+              /[。，？！.,\?\!/\(\)]\"\'/g,
+              ""
+            )
+            if (phrases.includes(normalizedPhrase)) {
               markCorrect(phrase)
             } else {
-              const normalizedPhrase = phrase.replace(/？?！! 。.\(\), /g, "")
-              if (phrases.includes(normalizedPhrase)) {
-                markCorrect(phrase)
-              } else {
-                markIncorrect(phrases[0])
-              }
+              markIncorrect(phrases[0])
             }
+
             annyang.abort()
             againButton.disabled = false
           })
