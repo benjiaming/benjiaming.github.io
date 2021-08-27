@@ -96,6 +96,9 @@
 
           phraseElement.innerText = phrase
           translationElement.innerHTML = currentDeck[phrase]
+        setLanguage(selectedDeck)
+        refreshCallback(phrase)
+
         })
 
         showTranslationElement.onchange = function () {
@@ -135,9 +138,6 @@
           annyang.start({ autoRestart: true, continuous: false })
         }
 
-        setLanguage(selectedDeck)
-        refreshCallback(phrase)
-
         async function fetchDeck(deck) {
           const res = await fetch(
             "https://benjiaming.github.io/zhongwen/" + deck + ".json"
@@ -157,9 +157,10 @@
         function refreshCallback(phrase) {
           annyang.addCallback("result", function (phrases) {
             const normalizedPhrase = phrase.replace(
-              /[。，？！.,\?\!/\(\)]\"\'/g,
+              /[。，？！.,\?\!/\(\)\"\'\s]/g,
               ""
             )
+            console.log({phrase, normalizedPhrase, phrases})
             if (phrases.includes(normalizedPhrase)) {
               markCorrect(phrase)
             } else {
