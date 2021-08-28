@@ -22,6 +22,7 @@
         border: 1px solid;
       }
       .button-container {
+        margin-bottom: 20px;
         display: inline-flex;
       }
       .please-say {
@@ -39,6 +40,9 @@
       }
       #right {
         color: green;
+      }
+      #judgement {
+        margin-top: 20px;
       }
     </style>
   </head>
@@ -96,9 +100,9 @@
 
           phraseElement.innerText = phrase
           translationElement.innerHTML = currentDeck[phrase]
-        setLanguage(selectedDeck)
-        refreshCallback(phrase)
-
+          setLanguage(selectedDeck)
+          refreshCallback(phrase)
+          annyang.start({ autoRestart: true, continuous: false })
         })
 
         showTranslationElement.onchange = function () {
@@ -148,23 +152,22 @@
         function setLanguage(selectedDeck) {
           if (selectedDeck.includes("japanese")) {
             annyang.setLanguage("ja")
-          } else if (selectedDeck.includes("vietnamese")) {
-            annyang.setLanguage("zh-CN")
           } else {
             annyang.setLanguage("zh-CN")
           }
         }
-        function refreshCallback(phrase) {
-          annyang.addCallback("result", function (phrases) {
-            const normalizedPhrase = phrase.replace(
-              /[。，？！.,\?\!/\(\)\"\'\s]/g,
-              ""
-            )
-            console.log({phrase, normalizedPhrase, phrases})
-            if (phrases.includes(normalizedPhrase)) {
-              markCorrect(phrase)
+        function refreshCallback(expectedPhrase) {
+          annyang.addCallback("result", function (actualPhrases) {
+            const normalizedPhrase = normalizePhrase(expectedPhrase)
+            console.log({ actualPhrases, normalizedPhrase })
+            if (actualPhrases.includes(normalizedPhrase)) {
+              markCorrect(
+                expectedPhrase,
+                actualPhrases.indexOf(normalizedPhrase),
+                actualPhrases[0]
+              )
             } else {
-              markIncorrect(phrases[0])
+              markIncorrect(actualPhrases[0])
             }
 
             annyang.abort()
@@ -172,22 +175,66 @@
           })
         }
 
-        annyang.start({ autoRestart: true, continuous: false })
+        function normalizePhrase(phrase) {
+          let normalizedPhrase = phrase.replace(
+            /[。，？！.,\?\!/\(\)\"\'\s]/g,
+            ""
+          )
+          return normalizedPhrase
+        }
 
-        function markCorrect(phrase) {
-          resultElement.innerText = phrase
-          resultElement.style.color = "green"
-          judgementElement.innerText = "GOOD JOB!"
+        function markCorrect(phrase, position, actualPronunciation) {
+          judgementElement.style.color = "green"
+          let message = "GOOD JOB! "
+          if (position === 0) {
+            message += "I had no problem understanding you."
+          } else if (position === 1) {
+            message += "Your pronunciation was a little bit off though."
+          } else {
+            message +=
+              "You should work on your tones though. Want to try again?"
+            judgementElement.style.color = "orange"
+          }
+          judgementElement.innerText = message
+
           rightAnswers += 1
           rightElement.innerHTML = rightAnswers
+          resultElement.innerHTML = actualPronunciation
+          console.log(judgePronunciation(actualPronunciation, phrase))
         }
 
         function markIncorrect(phrase) {
-          resultElement.innerText = phrase
-          resultElement.style.color = "red"
-          judgementElement.innerText = "Oops. Try again!"
+        function markIncorrect(actualPronunciation) {
+          resultElement.innerHTML = actualPronunciation
+          judgementElement.style.color = "red"
+          judgementElement.innerText =
+            "Oops. I couldn't understand you. Would you like to try again?"
           wrongAnswers += 1
           wrongElement.innerHTML = wrongAnswers
+        }
+
+        function getDifference(s, t) {
+          s = [...s].sort()
+          t = [...t].sort()
+          return t.filter((char, i) => char !== s[i])
+        }
+
+        function judgePronunciation(
+          actualPronunciation,
+          expectedPronunciation
+        ) {
+          if (actualPronunciation === expectedPronunciation) {
+            return ""
+          }
+          const diffs = getDifference(
+            actualPronunciation,
+            normalizePhrase(expectedPronunciation)
+          )
+          if (!diffs) {
+            return expectedPronunciation
+          }
+          console.log({diffs});
+          return ""
         }
       }
     </script>
