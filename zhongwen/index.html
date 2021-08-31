@@ -83,6 +83,9 @@
         const translationContainerElement = document.getElementById(
           "translation_container"
         )
+        const audio = document.getElementById("recording")
+
+        audio.style.display = 'none'
 
         let rightAnswers = 0
         let wrongAnswers = 0
@@ -93,6 +96,7 @@
 
         let currentDeck, keys, randomIndex, phrase
         const synth = window.speechSynthesis
+        let mediaRecorder
 
         let selectedDeck = document.getElementById("decks").value
         fetchDeck(selectedDeck).then(() => {
@@ -106,7 +110,7 @@
           translationElement.innerHTML = currentDeck[phrase]
           setLanguage(selectedDeck)
           refreshCallback(phrase)
-          annyang.start({ autoRestart: true, continuous: false })
+          startListening()
         })
 
         showTranslationElement.onchange = function () {
@@ -127,9 +131,8 @@
           })
         }
         againButton.onclick = function () {
-          resultElement.innerHTML = ""
-          judgementElement.innerHTML = ""
-          annyang.start({ autoRestart: true, continuous: false })
+          resetUI()
+          startListening()
         }
 
         continueButton.onclick = nextPhrase
@@ -142,16 +145,51 @@
           synth.speak(utterThis)
         }
 
+        let onError = function (err) {
+          console.log("The following error occured: " + err)
+        }
+
+        function onSuccess(stream) {
+          let chunks = []
+          mediaRecorder = new MediaRecorder(stream)
+          mediaRecorder.start()
+
+          mediaRecorder.ondataavailable = function (e) {
+            chunks.push(e.data)
+          }
+
+          mediaRecorder.onstop = function (e) {
+            audio.setAttribute("controls", "")
+            audio.controls = true
+            const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" })
+            const audioURL = window.URL.createObjectURL(blob)
+            audio.src = audioURL
+            audio.style.display = 'block'
+          }
+        }
+
+        function startListening() {
+          annyang.start({ autoRestart: true, continuous: false })
+          navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then(onSuccess, onError)
+        }
+
+        function resetUI() {
+          audio.style.display = 'none'
+          resultElement.innerHTML = ""
+          judgementElement.innerHTML = ""
+        }
+
         function nextPhrase() {
+          resetUI()
           randomIndex = Math.floor(Math.random() * keys.length)
           phrase = keys[randomIndex]
           phraseElement.innerText = phrase
           translationElement.innerHTML = currentDeck[phrase]
           annyang.removeCallback()
           refreshCallback(phrase)
-          resultElement.innerHTML = ""
-          judgementElement.innerHTML = ""
-          annyang.start({ autoRestart: true, continuous: false })
+          startListening()
         }
 
         async function fetchDeck(deck) {
@@ -169,6 +207,7 @@
         }
         function refreshCallback(expectedPhrase) {
           annyang.addCallback("result", function (actualPhrases) {
+            mediaRecorder.stop()
             const normalizedPhrase = normalizePhrase(expectedPhrase)
             console.log({ actualPhrases, normalizedPhrase })
             if (actualPhrases.includes(normalizedPhrase)) {
@@ -285,7 +324,14 @@
         <div id="translation_container">
           Translation: <span id="translation"></span>
         </div>
-        <div class="you-said">You said: <span id="result"></span></div>
+        <div class="you-said">
+          <div>
+            This is what I heard:
+            <span id="result"></span>
+            <article class="clip"></article>
+            <audio id="recording" controls></audio>
+          </div>
+        </div>
         <div id="judgement"></div>
         <div class="score">
           Score: 👍: <span id="right">0</span> 👎<span id="wrong">0</span>
@@ -301,20 +347,34 @@
       <small>
         Instructions:
         <ul>
-          <li>Select a deck to study and speak out loud the phrase on the screen.</li>
-          <li>Currently supported languages are Mandarin Chinese and Japanese.</li>
+          <li>
+            Select a deck to study and speak out loud the phrase on the screen.
+          </li>
+          <li>
+            Currently supported languages are Mandarin Chinese and Japanese.
+          </li>
         </ul>
 
         Disclaimer:
-        <p>
-          <ul>
-            <li>This tool only works on Google Chrome (desktop and mobile) and Edge.</li>
-            <li>The text to speech and the speech recognition engines are not perfect - especially as the phrase gets more complex.</li>
-            <li>Just because you get thumbs up doesn’t mean your pronunciation is perfect (since speech recognition is meant to be forgiving).</li>
-            <li>A perfect pronunciation doesn’t guarantee you get thumbs up.</li>
-            <li>Some of the decks contain a mixture of simplified and traditional characters. This confuses the speech recognition engine so you may not be able to get thumbs up even with a perfect pronunciation.</li>
-          </ul>
-        </p>
+        <ul>
+          <li>
+            This tool only works on Google Chrome (desktop and mobile) and Edge.
+          </li>
+          <li>
+            The text to speech and the speech recognition engines are not
+            perfect - especially as the phrase gets more complex.
+          </li>
+          <li>
+            Just because you get thumbs up doesn’t mean your pronunciation is
+            perfect (since speech recognition is meant to be forgiving).
+          </li>
+          <li>A perfect pronunciation doesn’t guarantee you get thumbs up.</li>
+          <li>
+            Some of the decks contain a mixture of simplified and traditional
+            characters. This confuses the speech recognition engine so you may
+            not be able to get thumbs up even with a perfect pronunciation.
+          </li>
+        </ul>
         Sources:
         <ul>
           <li>
