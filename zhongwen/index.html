@@ -71,6 +71,7 @@
 
         const continueButton = document.getElementById("continue")
         const againButton = document.getElementById("again")
+        const playButton = document.getElementById("play")
         const resultElement = document.getElementById("result")
         const judgementElement = document.getElementById("judgement")
         const phraseElement = document.getElementById("phrase")
@@ -88,7 +89,10 @@
 
         againButton.disabled = true
 
+        let preferredLanguage = "zh-CN"
+
         let currentDeck, keys, randomIndex, phrase
+        const synth = window.speechSynthesis
 
         let selectedDeck = document.getElementById("decks").value
         fetchDeck(selectedDeck).then(() => {
@@ -130,6 +134,14 @@
 
         continueButton.onclick = nextPhrase
 
+        playButton.onclick = function () {
+          const utterThis = new SpeechSynthesisUtterance(phrase)
+          const myLang = utterThis.lang
+          utterThis.lang = preferredLanguage
+
+          synth.speak(utterThis)
+        }
+
         function nextPhrase() {
           randomIndex = Math.floor(Math.random() * keys.length)
           phrase = keys[randomIndex]
@@ -151,10 +163,9 @@
 
         function setLanguage(selectedDeck) {
           if (selectedDeck.includes("japanese")) {
-            annyang.setLanguage("ja")
-          } else {
-            annyang.setLanguage("zh-CN")
+            preferredLanguage = "ja-JP"
           }
+          annyang.setLanguage(preferredLanguage)
         }
         function refreshCallback(expectedPhrase) {
           annyang.addCallback("result", function (actualPhrases) {
@@ -232,7 +243,7 @@
           if (!diffs) {
             return expectedPronunciation
           }
-          console.log({diffs});
+          console.log({ diffs })
           return ""
         }
       }
@@ -278,8 +289,9 @@
           Score: 👍: <span id="right">0</span> 👎<span id="wrong">0</span>
         </div>
         <div class="button-container">
-          <button id="again">Try again!</button>&nbsp;
-          <button id="continue">Next phrase</button>
+          <button id="again">🔁 Try again!</button>&nbsp;
+          <button id="continue">⏭️ Next phrase</button>&nbsp;
+          <button id="play">🔈 Play this phrase</button>
         </div>
       </div>
     </div>
