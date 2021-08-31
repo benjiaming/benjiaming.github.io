@@ -249,9 +249,9 @@
       }
     </script>
 
-    <h1 id="header">Repeat the phrase you see below</h1>
     <div class="container">
       <div class="child">
+        <h1 id="header">Pronunciation Trainer</h1>
         <div>
           <label for="decks">Select deck: </label>
           <select name="decks" id="decks">
@@ -279,7 +279,9 @@
           <label for="show_translation">Show translations: </label>
           <input type="checkbox" id="show_translation" checked />
         </div>
-        <div class="please-say">Please say: <span id="phrase"></span></div>
+        <div class="please-say">
+          Please say out loud this phrase: <span id="phrase"></span>
+        </div>
         <div id="translation_container">
           Translation: <span id="translation"></span>
         </div>
@@ -297,6 +299,22 @@
     </div>
     <p>
       <small>
+        Instructions:
+        <ul>
+          <li>Select a deck to study and speak out loud the phrase on the screen.</li>
+          <li>Currently supported languages are Mandarin Chinese and Japanese.</li>
+        </ul>
+
+        Disclaimer:
+        <p>
+          <ul>
+            <li>This tool only works on Google Chrome (desktop and mobile) and Edge.</li>
+            <li>The text to speech and the speech recognition engines are not perfect - especially as the phrase gets more complex.</li>
+            <li>Just because you get thumbs up doesn’t mean your pronunciation is perfect (since speech recognition is meant to be forgiving).</li>
+            <li>A perfect pronunciation doesn’t guarantee you get thumbs up.</li>
+            <li>Some of the decks contain a mixture of simplified and traditional characters. This confuses the speech recognition engine so you may not be able to get thumbs up even with a perfect pronunciation.</li>
+          </ul>
+        </p>
         Sources:
         <ul>
           <li>
