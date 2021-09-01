@@ -83,9 +83,10 @@
         const translationContainerElement = document.getElementById(
           "translation_container"
         )
-        const audio = document.getElementById("recording")
+        const audioElement = document.getElementById("recording")
+        const deckElement = document.getElementById("decks")
 
-        audio.style.display = 'none'
+        audioElement.style.display = "none"
 
         let rightAnswers = 0
         let wrongAnswers = 0
@@ -98,7 +99,14 @@
         const synth = window.speechSynthesis
         let mediaRecorder
 
-        let selectedDeck = document.getElementById("decks").value
+        const queryString = window.location.search
+        const urlParams = new URLSearchParams(queryString)
+
+        let selectedDeck = deckElement.value
+        if (urlParams.has("deck")){
+          selectedDeck = urlParams.get("deck")
+          deckElement.value = selectedDeck
+        }
         fetchDeck(selectedDeck).then(() => {
           currentDeck = phrases[selectedDeck]
 
@@ -121,7 +129,7 @@
           }
         }
         decks.onchange = function (item) {
-          selectedDeck = document.getElementById("decks").value
+          selectedDeck = deckElement.value
           fetchDeck(selectedDeck).then(() => {
             setLanguage(selectedDeck)
             currentDeck = phrases[selectedDeck]
@@ -159,12 +167,12 @@
           }
 
           mediaRecorder.onstop = function (e) {
-            audio.setAttribute("controls", "")
-            audio.controls = true
+            audioElement.setAttribute("controls", "")
+            audioElement.controls = true
             const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" })
             const audioURL = window.URL.createObjectURL(blob)
-            audio.src = audioURL
-            audio.style.display = 'block'
+            audioElement.src = audioURL
+            audioElement.style.display = "block"
           }
         }
 
@@ -176,7 +184,7 @@
         }
 
         function resetUI() {
-          audio.style.display = 'none'
+          audioElement.style.display = "none"
           resultElement.innerHTML = ""
           judgementElement.innerHTML = ""
         }
@@ -311,7 +319,9 @@
             <option value="hsk6_grammar">HSK 6 Grammar Points</option>
             <option value="japanese_deck_1_short">
               LTL Japanese Deck Level 1 - Short
+
             </option>
+            <option value="czech">Czech</option>
             <option value="test_deck">Test Deck</option>
           </select>
         </div>
