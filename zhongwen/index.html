@@ -210,6 +210,10 @@
         function setLanguage(selectedDeck) {
           if (selectedDeck.includes("japanese")) {
             preferredLanguage = "ja-JP"
+          } else if (selectedDeck.includes("czech")) {
+            preferredLanguage = "cs"
+          } else if (selectedDeck.includes("german")) {
+            preferredLanguage = "de-DE"
           }
           annyang.setLanguage(preferredLanguage)
         }
