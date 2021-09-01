@@ -103,7 +103,7 @@
         const urlParams = new URLSearchParams(queryString)
 
         let selectedDeck = deckElement.value
-        if (urlParams.has("deck")){
+        if (urlParams.has("deck")) {
           selectedDeck = urlParams.get("deck")
           deckElement.value = selectedDeck
         }
@@ -214,7 +214,10 @@
             preferredLanguage = "cs"
           } else if (selectedDeck.includes("german")) {
             preferredLanguage = "de-DE"
+          } else {
+            preferredLanguage = "zh-CN"
           }
+          console.log({ preferredLanguage })
           annyang.setLanguage(preferredLanguage)
         }
         function refreshCallback(expectedPhrase) {
@@ -222,7 +225,7 @@
             mediaRecorder.stop()
             const normalizedPhrase = normalizePhrase(expectedPhrase)
             console.log({ actualPhrases, normalizedPhrase })
-            if (actualPhrases.includes(normalizedPhrase)) {
+            if (actualPhrases.map(p => p.toUpperCase()).includes(normalizedPhrase.toUpperCase())) {
               markCorrect(
                 expectedPhrase,
                 actualPhrases.indexOf(normalizedPhrase),
@@ -238,10 +241,11 @@
         }
 
         function normalizePhrase(phrase) {
-          let normalizedPhrase = phrase.replace(
-            /[。，？！.,\?\!/\(\)\"\'\s]/g,
-            ""
-          )
+          let normalizedPhrase = phrase.replace(/[\.,\?\!/\(\)\"\']/g, "")
+          if (["zh-CN", "ja-JP"].includes(preferredLanguage)) {
+            normalizedPhrase = phrase.replace(/[。、，？！\s+]/g, "")
+          }
+
           return normalizedPhrase
         }
 
@@ -253,8 +257,12 @@
           } else if (position === 1) {
             message += "Your pronunciation was a little bit off though."
           } else {
+            if (preferredLanguage === "zh-CN") {
             message +=
               "You should work on your tones though. Want to try again?"
+            } else {
+              message += "Your pronunciation wasn't perfect though."
+            }
             judgementElement.style.color = "orange"
           }
           judgementElement.innerText = message
@@ -323,9 +331,9 @@
             <option value="hsk6_grammar">HSK 6 Grammar Points</option>
             <option value="japanese_deck_1_short">
               LTL Japanese Deck Level 1 - Short
-
             </option>
             <option value="czech">Czech</option>
+            <option value="german_b1_goethe">German B1 (Goethe)</option>
             <option value="test_deck">Test Deck</option>
           </select>
         </div>
