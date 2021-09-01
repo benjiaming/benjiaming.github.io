@@ -97,6 +97,7 @@
 
         let currentDeck, keys, randomIndex, phrase
         const synth = window.speechSynthesis
+        const isMobile = navigator.userAgentData.mobile
         let mediaRecorder
 
         const queryString = window.location.search
@@ -178,9 +179,14 @@
 
         function startListening() {
           annyang.start({ autoRestart: true, continuous: false })
-          navigator.mediaDevices
-            .getUserMedia({ audio: true })
-            .then(onSuccess, onError)
+          console.log({ isMobile })
+          if (isMobile) {
+            console.log("Disabling recording")
+          } else {
+            navigator.mediaDevices
+              .getUserMedia({ audio: true })
+              .then(onSuccess, onError)
+          }
         }
 
         function resetUI() {
@@ -222,10 +228,16 @@
         }
         function refreshCallback(expectedPhrase) {
           annyang.addCallback("result", function (actualPhrases) {
-            mediaRecorder.stop()
+            if (!isMobile) {
+              mediaRecorder.stop()
+            }
             const normalizedPhrase = normalizePhrase(expectedPhrase)
             console.log({ actualPhrases, normalizedPhrase })
-            if (actualPhrases.map(p => p.toUpperCase()).includes(normalizedPhrase.toUpperCase())) {
+            if (
+              actualPhrases
+                .map((p) => p.toUpperCase())
+                .includes(normalizedPhrase.toUpperCase())
+            ) {
               markCorrect(
                 expectedPhrase,
                 actualPhrases.indexOf(normalizedPhrase),
@@ -258,8 +270,8 @@
             message += "Your pronunciation was a little bit off though."
           } else {
             if (preferredLanguage === "zh-CN") {
-            message +=
-              "You should work on your tones though. Want to try again?"
+              message +=
+                "You should work on your tones though. Want to try again?"
             } else {
               message += "Your pronunciation wasn't perfect though."
             }
