@@ -44,6 +44,12 @@
       #judgement {
         margin-top: 20px;
       }
+      .clip {
+        margin-top: 20px;
+      }
+      #start-recording-box {
+        margin-top: 20px;
+      }
       .recording-container {
         margin-top: 20px;
         font-style: italic;
@@ -56,6 +62,8 @@
         left: 10px;
         width: 20px;
         height: 20px;
+        color: transparent;
+        text-shadow: 0 0 0 red;
         animation: zoom-in-zoom-out 2s ease-in infinite;
       }
 
@@ -111,7 +119,10 @@
         )
         const audioElement = document.getElementById("recording")
         const deckElement = document.getElementById("decks")
-        const recordingBox = document.getElementById("recording-box")
+        const recordingBoxElement = document.getElementById("recording-box")
+        const startRecordingBoxElement = document.getElementById(
+          "start-recording-box"
+        )
 
         audioElement.style.display = "none"
 
@@ -135,6 +146,9 @@
           selectedDeck = urlParams.get("deck")
           deckElement.value = selectedDeck
         }
+
+        recordingBoxElement.hidden = true
+
         fetchDeck(selectedDeck).then(() => {
           currentDeck = phrases[selectedDeck]
 
@@ -146,7 +160,9 @@
           translationElement.innerHTML = currentDeck[phrase]
           setLanguage(selectedDeck)
           refreshCallback(phrase)
-          startListening()
+          startRecordingBoxElement.onclick = function () {
+            startListening()
+          }
         })
 
         showTranslationElement.onchange = function () {
@@ -176,6 +192,7 @@
         continueButton.onclick = nextPhrase
 
         document.onkeydown = function (e) {
+          e.preventDefault()
           switch (e.key) {
             case "ArrowLeft":
               speakAgain()
@@ -223,7 +240,7 @@
         }
 
         function startListening() {
-          recordingBox.style.display = "block"
+          recordingBoxElement.hidden = false
           annyang.start({ autoRestart: true, continuous: false })
           console.log({ isMobile })
           if (isMobile) {
@@ -233,10 +250,11 @@
               .getUserMedia({ audio: true })
               .then(onSuccess, onError)
           }
+          startRecordingBoxElement.hidden = true
         }
 
         function stopListening() {
-          recordingBox.style.display = "none"
+          recordingBoxElement.hidden = true
           if (!isMobile) {
             mediaRecorder.stop()
           }
@@ -360,7 +378,7 @@
             return ""
           }
           const diffs = getDifference(
-            actualPronunciation,
+            normalizePhrase(actualPronunciation),
             normalizePhrase(expectedPronunciation)
           )
           if (!diffs) {
@@ -379,34 +397,34 @@
           <label for="decks">Select deck: </label>
           <select name="decks" id="decks">
             <option value="mandarin_deck_1_short">
-              LTL Mandarin Chinese Deck Level 1 - Short
+              🦁 LTL Mandarin Chinese Deck Level 1 - Short
             </option>
             <option value="mandarin_deck_2_short_medium">
-              LTL Mandarin Chinese Deck Level 2 - Short Medium
+              🦁 LTL Mandarin Chinese Deck Level 2 - Short Medium
             </option>
             <option value="mandarin_deck_3_medium">
-              LTL Mandarin Chinese Deck Level 3 - Medium
+              🦁 LTL Mandarin Chinese Deck Level 3 - Medium
             </option>
             <option value="mandarin_deck_4_long">
-              LTL Mandarin Chinese Deck Level 4 - Medium Long
+              🦁 LTL Mandarin Chinese Deck Level 4 - Medium Long
             </option>
             <option value="mandarin_deck_5_long">
-              LTL Mandarin Chinese Deck Level 5 - Long
+              🦁 LTL Mandarin Chinese Deck Level 5 - Long
             </option>
             <option value="hsk4_lesson_249">
-              HSK 4 Lesson 249: Feed on Fancies (望梅止渴)
+              🦁 HSK 4 Lesson 249: Feed on Fancies (望梅止渴)
             </option>
-            <option value="hsk1_grammar">HSK 1 Grammar Points</option>
-            <option value="hsk2_grammar">HSK 2 Grammar Points</option>
-            <option value="hsk3_grammar">HSK 3 Grammar Points</option>
-            <option value="hsk4_grammar">HSK 4 Grammar Points</option>
-            <option value="hsk5_grammar">HSK 5 Grammar Points</option>
-            <option value="hsk6_grammar">HSK 6 Grammar Points</option>
+            <option value="hsk1_grammar">🦸 HSK 1 Grammar Points</option>
+            <option value="hsk2_grammar">🦸 HSK 2 Grammar Points</option>
+            <option value="hsk3_grammar">🦸 HSK 3 Grammar Points</option>
+            <option value="hsk4_grammar">🦸 HSK 4 Grammar Points</option>
+            <option value="hsk5_grammar">🦸 HSK 5 Grammar Points</option>
+            <option value="hsk6_grammar">🦸HSK 6 Grammar Points</option>
             <option value="japanese_deck_1_short">
-              LTL Japanese Deck Level 1 - Short
+              🇯🇵 LTL Japanese Deck Level 1 - Short
             </option>
-            <option value="czech">Czech</option>
-            <option value="german_b1_goethe">German B1 (Goethe)</option>
+            <option value="czech">🇨🇿 Czech</option>
+            <option value="german_b1_goethe">🇩🇪 German B1 (Goethe)</option>
             <option value="test_deck">Test Deck</option>
           </select>
         </div>
@@ -420,8 +438,14 @@
         <div id="translation_container">
           Translation: <span id="translation"></span>
         </div>
+        <div id="start-recording-box">
+          <button id="start-recording-button">
+            Click here to start recording 💬
+          </button>
+        </div>
         <div class="recording-container" id="recording-box">
-          Recording in progress... <span class="recording">🗣</span>
+          Recording in progress... please speak now:
+          <span class="recording">💬</span>
         </div>
         <div class="you-said">
           <div>
@@ -451,7 +475,7 @@
             the screen.
           </li>
           <li>
-            Currently supported languages are Mandarin Chinese and Japanese.
+            Currently supported languages are: Mandarin Chinese, Japanese, German, Czech.
           </li>
           <li>
             Keyboard shortcuts: ⬅️ Try again ⬆️ Play this phrase ➡️ Next phrase
@@ -472,11 +496,6 @@
             perfect (since speech recognition is meant to be forgiving).
           </li>
           <li>A perfect pronunciation doesn’t guarantee you get thumbs up.</li>
-          <li>
-            Some of the decks contain a mixture of simplified and traditional
-            characters. This confuses the speech recognition engine so you may
-            not be able to get thumbs up even with a perfect pronunciation.
-          </li>
         </ul>
         Sources:
         <ul>
