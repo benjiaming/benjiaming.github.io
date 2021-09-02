@@ -44,6 +44,32 @@
       #judgement {
         margin-top: 20px;
       }
+      .recording-container {
+        margin-top: 20px;
+        font-style: italic;
+      }
+      .recording {
+        font-style: normal;
+        display: inline-block;
+        position: relative;
+        top: -4px;
+        left: 10px;
+        width: 20px;
+        height: 20px;
+        animation: zoom-in-zoom-out 2s ease-in infinite;
+      }
+
+      @keyframes zoom-in-zoom-out {
+        0% {
+          transform: scale(1, 1);
+        }
+        50% {
+          transform: scale(1.5, 1.5);
+        }
+        100% {
+          transform: scale(1, 1);
+        }
+      }
     </style>
   </head>
   <body onload="init()">
@@ -85,6 +111,7 @@
         )
         const audioElement = document.getElementById("recording")
         const deckElement = document.getElementById("decks")
+        const recordingBox = document.getElementById("recording-box")
 
         audioElement.style.display = "none"
 
@@ -139,14 +166,32 @@
             nextPhrase()
           })
         }
-        againButton.onclick = function () {
+        againButton.onclick = speakAgain
+
+        function speakAgain() {
           resetUI()
           startListening()
         }
 
         continueButton.onclick = nextPhrase
 
-        playButton.onclick = function () {
+        document.onkeydown = function (e) {
+          switch (e.key) {
+            case "ArrowLeft":
+              speakAgain()
+              break
+            case "ArrowUp":
+              playPhrase()
+              break
+            case "ArrowRight":
+              nextPhrase()
+              break
+          }
+        }
+
+        playButton.onclick = playPhrase
+
+        function playPhrase() {
           const utterThis = new SpeechSynthesisUtterance(phrase)
           const myLang = utterThis.lang
           utterThis.lang = preferredLanguage
@@ -178,6 +223,7 @@
         }
 
         function startListening() {
+          recordingBox.style.display = "block"
           annyang.start({ autoRestart: true, continuous: false })
           console.log({ isMobile })
           if (isMobile) {
@@ -186,6 +232,13 @@
             navigator.mediaDevices
               .getUserMedia({ audio: true })
               .then(onSuccess, onError)
+          }
+        }
+
+        function stopListening() {
+          recordingBox.style.display = "none"
+          if (!isMobile) {
+            mediaRecorder.stop()
           }
         }
 
@@ -226,11 +279,10 @@
           console.log({ preferredLanguage })
           annyang.setLanguage(preferredLanguage)
         }
+
         function refreshCallback(expectedPhrase) {
           annyang.addCallback("result", function (actualPhrases) {
-            if (!isMobile) {
-              mediaRecorder.stop()
-            }
+            stopListening()
             const normalizedPhrase = normalizePhrase(expectedPhrase)
             console.log({ actualPhrases, normalizedPhrase })
             if (
@@ -359,6 +411,9 @@
         <div id="translation_container">
           Translation: <span id="translation"></span>
         </div>
+        <div class="recording-container" id="recording-box">
+          Recording in progress... <span class="recording">🗣</span>
+        </div>
         <div class="you-said">
           <div>
             This is what I heard:
@@ -383,10 +438,14 @@
         Instructions:
         <ul>
           <li>
-            Select a deck to study and speak out loud the phrase on the screen.
+            Select a deck to study and speak out loud the phrase displayed on
+            the screen.
           </li>
           <li>
             Currently supported languages are Mandarin Chinese and Japanese.
+          </li>
+          <li>
+            Keyboard shortcuts: ⬅️ Try again ⬆️ Play this phrase ➡️ Next phrase
           </li>
         </ul>
 
