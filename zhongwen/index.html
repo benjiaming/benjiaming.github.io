@@ -236,6 +236,7 @@
             const audioURL = window.URL.createObjectURL(blob)
             audioElement.src = audioURL
             audioElement.style.display = "block"
+            mediaRecorder.stop
           }
         }
 
@@ -255,6 +256,7 @@
 
         function stopListening() {
           recordingBoxElement.hidden = true
+          annyang.abort()
           if (!isMobile) {
             mediaRecorder.stop()
           }
@@ -303,20 +305,18 @@
             stopListening()
             const normalizedPhrase = normalizePhrase(expectedPhrase)
             console.log({ actualPhrases, normalizedPhrase })
-            if (
-              actualPhrases
-                .map((p) => p.toUpperCase())
-                .includes(normalizedPhrase.toUpperCase())
-            ) {
+            const matchOf = actualPhrases
+              .map((p) => p.toUpperCase())
+              .indexOf(normalizedPhrase.toUpperCase())
+            if (matchOf === -1) {
+              markIncorrect(actualPhrases[0])
+            } else {
               markCorrect(
                 expectedPhrase,
                 actualPhrases.indexOf(normalizedPhrase),
-                actualPhrases[0]
+                actualPhrases[matchOf]
               )
-            } else {
-              markIncorrect(actualPhrases[0])
             }
-
             annyang.abort()
             againButton.disabled = false
           })
@@ -352,7 +352,6 @@
           rightAnswers += 1
           rightElement.innerHTML = rightAnswers
           resultElement.innerHTML = actualPronunciation
-          console.log(judgePronunciation(actualPronunciation, phrase))
         }
 
         function markIncorrect(actualPronunciation) {
@@ -362,6 +361,12 @@
             "Oops. I couldn't understand you. Would you like to try again?"
           wrongAnswers += 1
           wrongElement.innerHTML = wrongAnswers
+          const judgementResult = judgePronunciation(
+            actualPronunciation,
+            phrase
+          )
+          console.log({ judgementResult })
+          resultElement.innerHTML += `<div><span>Please pay attention to this:  </span><span>${judgementResult}<span></div>`
         }
 
         function getDifference(s, t) {
@@ -382,10 +387,16 @@
             normalizePhrase(expectedPronunciation)
           )
           if (!diffs) {
-            return expectedPronunciation
+            return ""
           }
           console.log({ diffs })
-          return ""
+          const results = phrase.split("").map((c) => {
+            if (diffs.includes(c)) {
+              return `<span style="color: red">${c}</span>`
+            }
+            return c
+          })
+          return results.join("")
         }
       }
     </script>
@@ -449,7 +460,7 @@
         </div>
         <div class="you-said">
           <div>
-            This is what I heard:
+            <span>This is what I heard you say:</span>
             <span id="result"></span>
             <article class="clip"></article>
             <audio id="recording" controls></audio>
@@ -475,7 +486,8 @@
             the screen.
           </li>
           <li>
-            Currently supported languages are: Mandarin Chinese, Japanese, German, Czech.
+            Currently supported languages are: Mandarin Chinese, Japanese,
+            German, Czech.
           </li>
           <li>
             Keyboard shortcuts: ⬅️ Try again ⬆️ Play this phrase ➡️ Next phrase
