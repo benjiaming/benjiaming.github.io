@@ -90,6 +90,7 @@
             "Speech Recognition is not supported on this browser. Please use the newest version of Google Chrome."
           return
         }
+        const jsonDeckURL = "https://benjiaming.github.io/zhongwen/"
         let phrases = {
           mandarin_deck_1_short: {},
           mandarin_deck_2_short_medium: {},
@@ -281,7 +282,7 @@
 
         async function fetchDeck(deck) {
           const res = await fetch(
-            "https://benjiaming.github.io/zhongwen/" + deck + ".json"
+            jsonDeckURL + deck + ".json"
           )
           phrases[deck] = await res.json()
         }
@@ -512,14 +513,26 @@
         Sources:
         <ul>
           <li>
+            🦁
             <a href="https://flexiclasses.com/anki-decks-chinese/"
-              >https://flexiclasses.com/anki-decks-chinese/</a
+              >LTL Flexi classes Anki decks</a
             >
           </li>
           <li>
-            <a href="https://www.zerotohero.ca/en/zh/grammar"
-              >https://www.zerotohero.ca/en/zh/grammar</a
+            🦸
+            <a href="https://www.zerotohero.ca/en/zh/grammar">
+              Chinese Zero to Hero grammar Cheatsheet</a
             >
+          </li>
+          <li>
+            🇨🇿 <a href="https://ankiweb.net/shared/info/264187905">
+              Czech Sentences
+            </a>
+          </li>
+          <li>
+            🇩🇪 <a href="https://ankiweb.net/shared/info/1586166030">
+              German Wordlist B1 (Goethe)
+            </a>
           </li>
         </ul>
       </small>
