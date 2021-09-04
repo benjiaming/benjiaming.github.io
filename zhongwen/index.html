@@ -91,7 +91,6 @@
           return
         }
         const jsonDeckURL = "https://benjiaming.github.io/zhongwen/"
-        const audioURL = "https://ankiuser.net/study/media"
 
         let phrases = {
           mandarin_deck_1_short: {},
@@ -158,13 +157,14 @@
 
           if (currentDeck["azure"]) {
             hasAzure = true
+            delete currentDeck["azure"]
           }
           keys = Object.keys(currentDeck)
           randomIndex = Math.floor(Math.random() * keys.length)
           phrase = keys[randomIndex]
 
           phraseElement.innerText = phrase
-          translationElement.innerHTML = currentDeck[phrase]
+          updateTranslation()
           setLanguage(selectedDeck)
           refreshCallback(phrase)
           startRecordingBoxElement.onclick = function () {
@@ -217,11 +217,9 @@
 
         function playPhrase() {
           if (hasAzure) {
-            const azureAudio = `${audioURL}/${currentDeck[phrase][1]}`
-            console.log({azureAudio});
-            const audio = new Audio(azureAudio)
-            audio.crossOrigin = "anonymous"
-            audio.play()
+            const azureAudio = `${jsonDeckURL}${selectedDeck}/${currentDeck[phrase][1]}`
+            new Audio(azureAudio).play()
+            console.log({ azureAudio })
             return
           }
           const utterThis = new SpeechSynthesisUtterance(phrase)
@@ -283,12 +281,20 @@
           judgementElement.innerHTML = ""
         }
 
+        function updateTranslation() {
+          if (hasAzure) {
+            translationElement.innerHTML = currentDeck[phrase][0]
+          } else {
+            translationElement.innerHTML = currentDeck[phrase]
+          }
+        }
+
         function nextPhrase() {
           resetUI()
           randomIndex = Math.floor(Math.random() * keys.length)
           phrase = keys[randomIndex]
           phraseElement.innerText = phrase
-          translationElement.innerHTML = currentDeck[phrase]
+          updateTranslation()
           annyang.removeCallback()
           refreshCallback(phrase)
           startListening()
@@ -449,7 +455,6 @@
             </option>
             <option value="czech">🇨🇿 Czech</option>
             <option value="german_b1_goethe">🇩🇪 German B1 (Goethe)</option>
-            <option value="test_deck">Test Deck</option>
           </select>
         </div>
         <div>
