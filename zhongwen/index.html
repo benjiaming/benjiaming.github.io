@@ -309,7 +309,7 @@
             const normalizedPhrase = normalizePhrase(expectedPhrase)
             console.log({ actualPhrases, normalizedPhrase })
             const matchOf = actualPhrases
-              .map((p) => p.toUpperCase())
+              .map((p) => normalizePhrase(p).toUpperCase())
               .indexOf(normalizedPhrase.toUpperCase())
             if (matchOf === -1) {
               markIncorrect(actualPhrases[0])
