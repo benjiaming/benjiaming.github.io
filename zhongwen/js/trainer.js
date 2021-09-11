@@ -5,7 +5,7 @@ function initTrainer() {
       "Speech Recognition is not supported on this browser. Please use the newest version of Google Chrome."
     return
   }
-  const jsonDeckURL = "https://benjiaming.github.io/zhongwen/"
+  const jsonDeckURL = "/zhongwen/decks/"
 
   let phrases = {}
 
