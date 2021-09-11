@@ -56,12 +56,6 @@ function initTrainer() {
   recordingBoxElement.hidden = true
 
   fetchDeck(selectedDeck).then(() => {
-    currentDeck = phrases[selectedDeck]
-
-    if (currentDeck["azure"]) {
-      hasAzure = true
-      delete currentDeck["azure"]
-    }
     keys = Object.keys(currentDeck)
     randomIndex = Math.floor(Math.random() * keys.length)
     phrase = keys[randomIndex]
@@ -86,8 +80,6 @@ function initTrainer() {
     selectedDeck = deckElement.value
     fetchDeck(selectedDeck).then(() => {
       setLanguage(selectedDeck)
-      currentDeck = phrases[selectedDeck]
-
       keys = Object.keys(currentDeck)
       nextPhrase()
     })
@@ -126,7 +118,6 @@ function initTrainer() {
       return
     }
     const utterThis = new SpeechSynthesisUtterance(phrase)
-    const myLang = utterThis.lang
     utterThis.lang = preferredLanguage
 
     synth.speak(utterThis)
@@ -206,6 +197,12 @@ function initTrainer() {
   async function fetchDeck(deck) {
     const res = await fetch(jsonDeckURL + deck + ".json")
     phrases[deck] = await res.json()
+    currentDeck = phrases[selectedDeck]
+
+    if (currentDeck["azure"]) {
+      hasAzure = true
+      delete currentDeck["azure"]
+    }
   }
 
   function setLanguage(selectedDeck) {
