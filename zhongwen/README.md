@@ -14,24 +14,6 @@ index.html
 /styles
  * trainer.css: the stylesheet for the app
 
-
-## Running the trainer locally
-
-Running the trainer requires an HTTP server to serve the json and audio files. The easiest way to run an HTTP server is the follow [these instructions](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server).
-
-In short, you need:
-1. Download Python from [https://www.python.org/](python.org).
-2. On the first installer page, make sure you check the "Add Python 3.xxx to PATH" checkbox.
-3. Open your command prompt (Windows) / terminal (macOS/ Linux). To check if Python is installed, enter the following command:
-4.
-   ```bash
-   cd trainer/ # this is the name of the folder where you downloaded this trainer
-   python -m SimpleHTTPServer
-   ```
-5. Open Google Chrome with this URL:
-http://localhost:8000/zhongwen/?deck=hsk1_chapter1
-
-
 ## Creating decks (TBD)
 
 Currently this process is manual and error-prone. I will attempt to automate as much as possible.
