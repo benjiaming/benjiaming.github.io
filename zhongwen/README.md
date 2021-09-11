@@ -29,7 +29,7 @@ In short, you need:
    python -m SimpleHTTPServer
    ```
 5. Open Google Chrome with this URL:
-http://localhost:8000/zhongwen/?deck=test_deck
+http://localhost:8000/zhongwen/?deck=hsk1_chapter1
 
 
 ## Creating decks (TBD)
