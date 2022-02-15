@@ -1,7 +1,7 @@
 name: Tests if Pronunciation Trainer is up
 on: [push]
-#  schedule:
-#    - cron: '0 0 * * *'
+  schedule:
+  - cron: '0 0 * * *'
 jobs:
   cypress-run:
     runs-on: ubuntu-20.04
