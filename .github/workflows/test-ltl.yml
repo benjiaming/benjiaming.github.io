@@ -1,5 +1,5 @@
 name: Tests if Pronunciation Trainer is up
-on: [push]
+on:
   schedule:
   - cron: '0 0 * * *'
 jobs:
