@@ -14,5 +14,4 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: zhongwen/test
-        with:
           run: node_modules/.bin/cypress run
