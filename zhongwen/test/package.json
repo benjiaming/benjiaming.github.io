@@ -1,6 +1,15 @@
 {
+  "name": "test-ltl",
+  "version": "1.0.0",
+  "description": "Test LTL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "cypress": "^14.4.1",
-    "@testing-library/cypress": "^10.0.3"
+    "@testing-library/cypress": "^10.0.3",
+    "cypress": "^14.4.1"
   }
 }
